@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lab 9 Vega-Lite</title>
+    <meta charset="utf-8" />
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.17.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.12.2"></script>
+
+    <style media="screen">
+      /* Add space between Vega-Embed links  */
+      .vega-actions a {
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Covid Tracking Project</h1>
+    <!-- Container for the visualization -->
+    <div id="vis"></div>
+
+    <script>
+      // Assign the specification to a local variable vlSpec.
+      var vlSpec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+
+  "data": {
+    "url": "https://api.covidtracking.com/v1/states/current.csv"
+  },
+  "vconcat": [
+    {
+      "width": 600,
+      "height": 275,
+      "selection": {
+      "brush":{"type":"interval"} 
+      },
+      "mark": {
+        "type": "point",
+        "tooltip": true
+      },
+      "encoding": {
+        "x": {
+          "field": "positive",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "death",
+          "type": "quantitative"
+        },
+        "color": {
+          "field": "dataQualityGrade",
+          "type": "nominal"
+        }
+      } 
+    },
+    {
+    "repeat": ["hospitalizedCumulative", "recovered"],
+    "columns": 1,
+    "spec":{
+      "width":600,
+      "height":125,
+      "transform": [{
+        "filter":{"selection":"brush"}
+        }],
+      "mark": "bar",
+      "encoding": {
+        "x":{
+          "field": "state",
+          "type":"nominal"
+        },
+        "y":{
+          "field": {"repeat":"repeat"},
+          "type": "quantitative"
+        }
+      }
+    }}
+  ]
+};
+
+      // Embed the visualization in the container with id `vis`
+      vegaEmbed('#vis', vlSpec);
+    </script>
+  </body>
+</html>
